@@ -83,7 +83,7 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
 }
-    
+
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': HOST_PREFIX + 'activate/{uid}/{token}',
@@ -139,3 +139,25 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# will be generated when the program is ran for the first time
+SECRET_KEY = 'NOT_SET'
+
+
+#generates a secret key when the program is ran for the first time
+if SECRET_KEY == 'NOT_SET':
+
+    from django.utils.crypto import get_random_string
+
+    SECRET_KEY = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+    # Read in the file
+    with open(__file__, 'r') as file :
+        filedata = file.read()
+
+    # Replace the target string
+    filedata = filedata.replace("\nSECRET_KEY = 'NOT_SET'","\nSECRET_KEY = '"+SECRET_KEY+"'\n")
+
+    # Write the file out again
+    with open(__file__, 'w') as file:
+        file.write(filedata)

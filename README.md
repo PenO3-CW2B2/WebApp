@@ -1,5 +1,5 @@
 # web server for smart bike rental system
-The webserver has been build with jango and provides a way for users to hire bikes.
+The webserver has been build with django and provides a way for users to hire bikes.
 
 ## installation
 
@@ -19,10 +19,6 @@ rename the `example.settings.py` to `settings.py` and edit the following setting
 - [ALLOWE_HOSTS](https://docs.djangoproject.com/en/2.1/ref/settings/#s-allowed-hosts)
 - HOST_PREFIX (see commend)
 - [DATABASES](https://docs.djangoproject.com/en/2.1/ref/settings/#s-databases)
-
-generate a private key for the project. This will be appended to the settings file.
-
-`python manage.py gen_private_key` (make sure you are in the directory of `manage.py`)
 
 You can test the server by running it locally
 
