@@ -8,6 +8,7 @@ the project has the following dependencies:
 - [python](https://www.python.org/)
 - [django](https://www.djangoproject.com/)
 - [django-rest-framework](https://www.django-rest-framework.org/)
+- [django-rest-framework-jwt](https://pypi.org/project/djangorestframework-jwt/)
 - [djoser](https://github.com/sunscrapers/djoser)
 
 clone this repository
@@ -19,6 +20,14 @@ rename the `example.settings.py` to `settings.py` and edit the following setting
 - [ALLOWE_HOSTS](https://docs.djangoproject.com/en/2.1/ref/settings/#s-allowed-hosts)
 - HOST_PREFIX (see commend)
 - [DATABASES](https://docs.djangoproject.com/en/2.1/ref/settings/#s-databases)
+
+create the migrations for the bikes
+
+`python manage.py makemigrations bikes`
+
+apply the migrations to the database
+
+`python manage.py migrate`
 
 You can test the server by running it locally
 
