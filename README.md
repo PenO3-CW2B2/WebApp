@@ -20,6 +20,7 @@ rename the `example.settings.py` to `settings.py` and edit the following setting
 - [ALLOWE_HOSTS](https://docs.djangoproject.com/en/2.1/ref/settings/#s-allowed-hosts)
 - HOST_PREFIX (see commend)
 - [DATABASES](https://docs.djangoproject.com/en/2.1/ref/settings/#s-databases)
+- [DEFAULT_FROM_EMAIL](https://docs.djangoproject.com/en/2.1/ref/settings/#s-default-from-email)
 
 create the migrations for the bikes
 
@@ -34,3 +35,8 @@ You can test the server by running it locally
 `python manage.py runserver`
 
 and you should be able to access it on http://127.0.0.1:8000
+
+for installation on [an ulyssis server](https://ulyssis.org/hosting/) with (Fast)CGI see [this](https://docs.ulyssis.org/Using_(Fast)CGI_for_non-PHP_websites#Example:_Django).
+
+Note: When using an appache server you should add `CGIPassAuth On` to the htaccess file.
+Otherwise the custom header `Authorization` will not be passed to django.

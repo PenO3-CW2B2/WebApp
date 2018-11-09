@@ -30,6 +30,13 @@ DATABASES = {
     'default':
 }
 
+# adress used for sening verification emails en the email for errors
+
+DEFAULT_FROM_EMAIL = 'no-reply@localhost'
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+EMAIL_SUBJECT_PREFIX = 'smartbikerental'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -81,12 +88,13 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': HOST_PREFIX + 'activate/{uid}/{token}',
+    'ACTIVATION_URL': HOST_PREFIX + 'auth/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {},
 }
@@ -144,7 +152,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # will be generated when the program is ran for the first time
 SECRET_KEY = 'NOT_SET'
 
-
 #generates a secret key when the program is ran for the first time
 if SECRET_KEY == 'NOT_SET':
 
@@ -156,7 +163,7 @@ if SECRET_KEY == 'NOT_SET':
         filedata = file.read()
 
     # Replace the target string
-    filedata = filedata.replace("\nSECRET_KEY = 'NOT_SET'","\nSECRET_KEY = '"+SECRET_KEY+"'\n")
+    filedata = filedata.replace("\nSECRET_KEY = 'NOT_SET'","\nSECRET_KEY = '"+SECRET_KEY+"'")
 
     # Write the file out again
     with open(__file__, 'w') as file:
