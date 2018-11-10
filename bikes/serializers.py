@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class PublicBikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bike
-        fields = ('modified_date', 'last_longitude', 'last_laltitude')
+        fields = ('id', 'modified_date', 'last_longitude', 'last_laltitude')
 
 
 class BikeSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class BikeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bike
-        fields = ('secret', 'modified_date', 'battery', 'last_longitude', 'last_laltitude')
+        fields = ('id', 'secret', 'modified_date', 'battery', 'last_longitude', 'last_laltitude')
 
 class ContractSerializer(serializers.ModelSerializer):
 
@@ -24,4 +24,4 @@ class ContractSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contract
-        fields = ('user', 'bike', 'time_start', 'time_end', 'payed')
+        fields = ('id', 'user', 'bike', 'time_start', 'time_end', 'payed')
