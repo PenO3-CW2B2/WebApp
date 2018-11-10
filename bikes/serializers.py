@@ -2,6 +2,12 @@ from rest_framework import serializers
 from bikes.models import Bike, Contract
 from django.contrib.auth.models import User
 
+class PublicBikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bike
+        fields = ('modified_date', 'last_longitude', 'last_laltitude')
+
+
 class BikeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
