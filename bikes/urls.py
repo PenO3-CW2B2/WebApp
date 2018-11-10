@@ -31,6 +31,9 @@ urlpatterns = [
     url(r'^bikes/?P<pk>/?$',
         views.bikeDetails.as_view(),
         name='bike-details'),
+    url(r'freebikes/?$',
+        views.FreeBikeList.as_view(),
+        name='free-bike-list')
     url(r'^contracts/?$',
         views.contractList.as_view(),
         name='contract-list'),

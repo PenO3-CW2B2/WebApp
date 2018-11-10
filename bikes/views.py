@@ -52,7 +52,7 @@ class userBike(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        bikes = request.user.bike_set().filter(time_end=None or time_end <= datetime.datetime.now())
+        bikes = request.user.bike_set().filter(contract__time_end=None or contract__time_end <= datetime.datetime.now())
         serializer = serializers.BikeSerializer(bikes, many=True)
         return Response(serializer.data)
 
@@ -71,6 +71,13 @@ class bikeList(APIView):
         bikes = Bike.objects.all()
         serializer = serializers.BikeSerializer(bikes, many=True)
         return Response(serializer.data)
+
+class FreeBikeList(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        bikes = Bike.objects.filter(contract__isnull = False or contract__time_end <= datetime.datetime.now())
+
 
 class bikeDetails(APIView):
     permission_classes = (IsAdminUser,)
