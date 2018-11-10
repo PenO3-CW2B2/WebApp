@@ -2,7 +2,7 @@ from rest_framework import serializers
 from bikes.models import Bike, Contract
 from django.contrib.auth.models import User
 
-class BikeSerializer(serializers.Serializer):
+class BikeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Bike.objects.create(**validated_data)
@@ -11,7 +11,7 @@ class BikeSerializer(serializers.Serializer):
         model = Bike
         fields = ('secret', 'modified_date', 'battery', 'last_longitude', 'last_laltitude')
 
-class ContractSerializer(serializers.Serializer):
+class ContractSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Contract.objects.create(**validated_data)
