@@ -76,7 +76,7 @@ class FreeBikeList(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        bikes = Bike.objects.filter(contract__isnull = False or contract__time_end <= datetime.datetime.now())
+        bikes = Bike.objects.filter(contract__isnull = True or contract__time_end <= datetime.datetime.now())
 
 
 class bikeDetails(APIView):
