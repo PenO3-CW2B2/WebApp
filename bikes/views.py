@@ -31,7 +31,9 @@ class UserActivationView(APIView):
 class bikeCreateView(generics.CreateAPIView):
     serializer_class = serializers.BikeSerializer
     permission_classes = (IsAdminUser,)
-
+    def perform_create(self, serializer):
+        data = self.request.data
+        serializer.save(last_longitude=data['last_longitude'], last_laltitude=data['last_laltitude'])
 
 class bikeDeleteView(generics.DestroyAPIView):
     serializer_class = serializers.BikeSerializer
@@ -43,7 +45,7 @@ class contractCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.users
-        bike = Bike.objects.get(id=elf.request.data.bike_id)
+        bike = Bike.objects.get(id=self.request.data['bike_id'])
         contract = serializer.save(user=user, bike=bike)
 
 class userBike(APIView):
@@ -51,7 +53,7 @@ class userBike(APIView):
 
     def get(self, request):
         bikes = request.user.bike_set().filter(time_end=None or time_end <= datetime.datetime.now())
-        serializer = BikeSerializer(bikes, many=True)
+        serializer = serializers.BikeSerializer(bikes, many=True)
         return Response(serializer.data)
 
 class userContracts(APIView):
@@ -59,7 +61,7 @@ class userContracts(APIView):
 
     def get(self, request):
         contracts = request.user.contract_set().all()
-        serializer = ContractSerializer(contracts, many=True)
+        serializer = serializers.ContractSerializer(contracts, many=True)
         return Repsone(serializer.data)
 
 class bikeList(APIView):
@@ -67,7 +69,7 @@ class bikeList(APIView):
 
     def get(self, request):
         bikes = Bike.objects.all()
-        serializer = BikeSerializer(bikes, many=True)
+        serializer = serializers.BikeSerializer(bikes, many=True)
         return Response(serializer.data)
 
 class bikeDetails(APIView):
@@ -75,7 +77,7 @@ class bikeDetails(APIView):
 
     def get(self, request, pk):
         bike = Bike.objects.get(id=pk)
-        serializer = BikeSerializer(bike)
+        serializer = serializers.BikeSerializer(bike)
         return Response(serializer.data)
 
 class contractList(APIView):
@@ -83,7 +85,7 @@ class contractList(APIView):
 
     def get(self, request):
         contracts = Contract.objects.all()
-        serializer = ContractSerializer(contracts, many=True)
+        serializer = serializers.ContractSerializer(contracts, many=True)
         return Response(serializer.data)
 
 class contractDetails(APIView):
@@ -91,5 +93,5 @@ class contractDetails(APIView):
 
     def get(self, request, pk):
         contract = Contract.objects.get(id=pk)
-        serializer = ContractSerializer(contract)
+        serializer = serializers.ContractSerializer(contract)
         return Response(serializer.data)

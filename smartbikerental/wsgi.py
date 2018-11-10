@@ -1,5 +1,5 @@
 """
-WSGI config for xbikeframework project.
+WSGI config for smartbikerental project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
