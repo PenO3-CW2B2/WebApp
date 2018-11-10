@@ -77,8 +77,8 @@ class FreeBikeList(APIView):
 
     def get(self, request):
         bikes = Bike.objects.filter(contract__isnull = True or contract__time_end <= datetime.datetime.now())
-        serializer = serializers.PublicBikeSerializer(bikes)
-        return Response(serializer.data, many=True)
+        serializer = serializers.PublicBikeSerializer(bikes, many=True)
+        return Response(serializer.data)
 
 
 class bikeDetails(APIView):
