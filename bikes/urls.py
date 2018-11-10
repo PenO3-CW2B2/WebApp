@@ -33,7 +33,7 @@ urlpatterns = [
         name='bike-details'),
     url(r'freebikes/?$',
         views.FreeBikeList.as_view(),
-        name='free-bike-list')
+        name='free-bike-list'),
     url(r'^contracts/?$',
         views.contractList.as_view(),
         name='contract-list'),
