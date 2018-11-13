@@ -47,8 +47,10 @@ class contractCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         if ([] != request.user.bike_set().filter(contract__time_end=None or contract__time_end <= datetime.datetime.now)):
             raise SuspiciousOperation("Invalid request; you already hire a bike")
-        user = self.request.user.id
         bike = self.request.data['bike_id']
+        if ([] != Bikes.objects.get(id=bike).contract_set().fileter(time_end=None or time_end <= datetime.datetime.now)):
+            raise SuspiciousOperation("Invalid request; this bike is already hirerd")
+        user = self.request.user.id
         contract = serializer.save(user_id=user, bike_id=bike)
 
 class userBike(APIView):
