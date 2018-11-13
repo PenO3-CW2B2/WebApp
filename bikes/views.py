@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from rest_framework import generics
 from rest_framework.views import APIView
+from django.core.exceptions import SuspiciousOperation
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
@@ -44,6 +45,8 @@ class contractCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
+        if ([] != request.user.bike_set().filter(contract__time_end=None or contract__time_end <= datetime.datetime.now)):
+            raise SuspiciousOperation("Invalid request; you already hire a bike")
         user = self.request.user.id
         bike = self.request.data['bike_id']
         contract = serializer.save(user_id=user, bike_id=bike)
@@ -61,7 +64,7 @@ class userContracts(APIView):
 
     def get(self, request):
         contracts = request.user.contract_set().all()
-        serializer = serializers.ContractSerializer(contracts, many=True)
+        serializer = serializers.SecretContractSerializer(contracts, many=True)
         return Repsone(serializer.data)
 
 class bikeList(APIView):
