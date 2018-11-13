@@ -2,6 +2,10 @@ from rest_framework import serializers
 from bikes.models import Bike, Contract
 from django.contrib.auth.models import User
 
+class SecretBikeSerializer(serializers.Serializer):
+    
+    pass
+
 class PublicBikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bike
@@ -9,6 +13,8 @@ class PublicBikeSerializer(serializers.ModelSerializer):
 
 
 class BikeSerializer(serializers.ModelSerializer):
+
+    Serializer(source='teacher_set'
 
     def create(self, validated_data):
         return Bike.objects.create(**validated_data)
@@ -24,4 +30,4 @@ class ContractSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contract
-        fields = ('id', 'user', 'bike', 'time_start', 'time_end', 'payed')
+        fields = ('id', 'user_id', 'bike_', 'time_start', 'time_end', 'payed')
