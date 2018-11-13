@@ -44,7 +44,7 @@ class contractCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
-        user = self.request.users.id
+        user = self.request.user.id
         bike = self.request.data['bike_id']
         contract = serializer.save(user_id=user, bike_id=bike)
 
