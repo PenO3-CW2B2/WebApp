@@ -11,6 +11,10 @@ from django.conf import settings
 from bikes import serializers, signals
 from bikes.models import Bike, Contract
 import datetime
+from hashlib import sha256
+
+def calculateBikeHash(secret, time_start, user_id):
+    sha256(secret + str(time_start.timestamp()) + str(user_id))
 
 class UserActivationView(APIView):
     """
@@ -45,7 +49,7 @@ class contractCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
-        if ([] != request.user.bike_set().filter(contract__time_end=None or contract__time_end <= datetime.datetime.now)):
+        if ([] != self.request.user.contract_set().filter(time_end=None or time_end <= datetime.datetime.now)):
             raise SuspiciousOperation("Invalid request; you already hire a bike")
         bike = self.request.data['bike_id']
         if ([] != Bikes.objects.get(id=bike).contract_set().fileter(time_end=None or time_end <= datetime.datetime.now)):
@@ -65,8 +69,12 @@ class userContracts(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        contracts = request.user.contract_set().all()
-        serializer = serializers.SecretContractSerializer(contracts, many=True)
+        user = request.user
+        contracts = user.contract_set().filter(time_end==None or time_end <= datetime.datetime.now)
+        contract = contracts[0]
+        bike = Bike.objects.get(id=contrct.bike_id)
+        hash = calculateBikeHash(bike.secret, contract.time_start, user.user_id)
+        serializer = serializers.ContractSerializer(contracts, hash=hash, many=True)
         return Repsone(serializer.data)
 
 class bikeList(APIView):

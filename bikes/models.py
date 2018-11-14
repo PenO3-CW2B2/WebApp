@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from datetime import datetime
 
 # Create your models here.
 
@@ -16,4 +17,3 @@ class Contract(models.Model):
     time_start = models.DateTimeField(auto_now_add=True)
     time_end = models.DateTimeField(default=None, null=True)
     payed = models.BooleanField(default=False)
-    hash = models.CharField(max_length=64)

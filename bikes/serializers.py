@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from bikes.models import Bike, Contract
 from django.contrib.auth.models import User
-from hashlib import sha256
+
 
 class PublicBikeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,9 +21,16 @@ class BikeSerializer(serializers.ModelSerializer):
 class ContractSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
-        hash = sha256(validated_data['user_id']+validated_data['time_start']+Bik.objetcs.get(id=validated_data['bike_id']).secret)
         return Contract.objects.create(**validated_data, hash=hash)
 
     class Meta:
         model = Contract
-        fields = ('hash', 'id', 'user_id', 'bike_id', 'time_start', 'time_end', 'payed')
+        fields = ('id', 'user_id', 'bike_id', 'time_start', 'time_end', 'payed')
+
+class SecretContractSerializer(serializers.ModelSerializer):
+
+    hash = serializers.CharField(max_length=64)
+
+    class Meta:
+        model = Contract
+        fields = ('bike_id', 'time_start', 'user_id')
