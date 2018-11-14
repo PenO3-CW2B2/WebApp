@@ -35,7 +35,8 @@ class SecretContractSerializer(serializers.ModelSerializer):
 
     def get_hash(self, obj):
         bike = Bike.objects.get(id=obj.bike_id)
-        hash = str(sha256(str(bike.secret).encode() + str(obj.time_start.timestamp()).encode() + str(obj.user_id).encode()))
+        hash = str(sha256(str(bike.secret).encode() + str(obj.time_start.timestamp()).encode() + str(obj.user_id).encode()).hexdigest())
+        return hash
 
     class Meta:
         model = Contract
