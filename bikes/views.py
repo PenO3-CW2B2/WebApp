@@ -12,9 +12,11 @@ from bikes import serializers, signals
 from bikes.models import Bike, Contract
 import datetime
 from hashlib import sha256
+from django.db.models import Q
+
 
 def calculateBikeHash(secret, time_start, user_id):
-    sha256(secret + str(time_start.timestamp()) + str(user_id))
+    return str(sha256(secret.encode() + str(time_start.timestamp()).encode() + str(user_id).encode()).hexdigest())
 
 class UserActivationView(APIView):
     """
@@ -38,7 +40,7 @@ class bikeCreateView(generics.CreateAPIView):
     permission_classes = (IsAdminUser,)
     def perform_create(self, serializer):
         data = self.request.data
-        serializer.save(last_longitude=data['last_longitude'], last_laltitude=data['last_laltitude'])
+        serializer.save()
 
 class bikeDeleteView(generics.DestroyAPIView):
     serializer_class = serializers.BikeSerializer
@@ -49,10 +51,11 @@ class contractCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
-        if ([] != self.request.user.contract_set.filter(time_end__isnull=True)):
+        print(self.request.user.contract_set.filter(time_end__isnull=True))
+        if self.request.user.contract_set.filter(time_end__isnull=True):
             raise SuspiciousOperation("Invalid request; you already hire a bike")
         bike = self.request.data['bike_id']
-        if ([] != Bikes.objects.get(id=bike).contract_set.filter(time_end__isnull=true)):
+        if Bike.objects.get(id=bike).contract_set.filter(time_end__isnull=True):
             raise SuspiciousOperation("Invalid request; this bike is already hirerd")
         user = self.request.user.id
         contract = serializer.save(user_id=user, bike_id=bike)
@@ -61,7 +64,7 @@ class userBike(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        bikes = request.user.bike_set().filter(contract__time_end=None or contract__time_end <= datetime.datetime.now())
+        bikes = request.user.bike_set().filter(contract__time_end__isnull=True)
         serializer = serializers.BikeSerializer(bikes, many=True)
         return Response(serializer.data)
 
@@ -70,12 +73,22 @@ class userContracts(APIView):
 
     def get(self, request):
         user = request.user
-        contracts = user.contract_set().filter(time_end==None or time_end <= datetime.datetime.now)
-        contract = contracts[0]
-        bike = Bike.objects.get(id=contrct.bike_id)
-        hash = calculateBikeHash(bike.secret, contract.time_start, user.user_id)
-        serializer = serializers.ContractSerializer(contracts, hash=hash, many=True)
+        contracts = user.contract_set.filter(time_end__isnull=True)
+        serializer = serializers.ContractSerializer(contracts, many=True)
         return Repsone(serializer.data)
+
+class userBikeHash(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        contracts = user.contract_set.filter(time_end__isnull=True)
+        contract = contracts[0]
+        bike = Bike.objects.get(id=contract.bike_id)
+        hash = calculateBikeHash(bike.secret, contract.time_start, user.id)
+        serializer = serializers.SecretContractSerializer(contract, context={'hash': hash})
+        print(serializer.data)
+        return Response(serializer.data)
 
 class bikeList(APIView):
     permission_classes = (IsAdminUser,)
@@ -89,7 +102,7 @@ class FreeBikeList(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        bikes = Bike.objects.filter(contract__isnull = True or contract__time_end <= datetime.datetime.now())
+        bikes = Bike.objects.filter(Q(contract__isnull = True) | Q(contract__time_end__isnull = False))
         serializer = serializers.PublicBikeSerializer(bikes, many=True)
         return Response(serializer.data)
 
