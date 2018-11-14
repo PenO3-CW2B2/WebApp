@@ -11,12 +11,7 @@ from django.conf import settings
 from bikes import serializers, signals
 from bikes.models import Bike, Contract
 import datetime
-from hashlib import sha256
 from django.db.models import Q
-
-
-def calculateBikeHash(secret, time_start, user_id):
-    return str(sha256(secret.encode() + str(time_start.timestamp()).encode() + str(user_id).encode()).hexdigest())
 
 class UserActivationView(APIView):
     """

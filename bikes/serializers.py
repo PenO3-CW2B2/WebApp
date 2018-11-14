@@ -22,12 +22,19 @@ class BikeSerializer(serializers.ModelSerializer):
 
 class ContractSerializer(serializers.ModelSerializer):
 
+    hash = serializers.SerializerMethodField()
+
     def create(self, validated_data):
         return Contract.objects.create(**validated_data)
 
+    def get_hash(self, obj):
+        bike = Bike.objects.get(id=obj.bike_id)
+        hash = str(sha256(str(bike.secret).encode() + str(obj.time_start.timestamp()).encode() + str(obj.user_id).encode()).hexdigest())
+        return hash
+
     class Meta:
         model = Contract
-        fields = ('id', 'user_id', 'bike_id', 'time_start', 'time_end', 'payed')
+        fields = ('hash', 'id', 'user_id', 'bike_id', 'time_start', 'time_end', 'payed')
 
 class SecretContractSerializer(serializers.ModelSerializer):
 
