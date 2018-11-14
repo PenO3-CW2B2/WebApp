@@ -49,10 +49,10 @@ class contractCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
-        if ([] != self.request.user.contract_set().filter(time_end=None or time_end <= datetime.datetime.now)):
+        if ([] != self.request.user.contract_set.filter(time_end__isnull=True)):
             raise SuspiciousOperation("Invalid request; you already hire a bike")
         bike = self.request.data['bike_id']
-        if ([] != Bikes.objects.get(id=bike).contract_set().fileter(time_end=None or time_end <= datetime.datetime.now)):
+        if ([] != Bikes.objects.get(id=bike).contract_set.filter(time_end__isnull=true)):
             raise SuspiciousOperation("Invalid request; this bike is already hirerd")
         user = self.request.user.id
         contract = serializer.save(user_id=user, bike_id=bike)

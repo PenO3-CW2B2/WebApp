@@ -21,7 +21,7 @@ class BikeSerializer(serializers.ModelSerializer):
 class ContractSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
-        return Contract.objects.create(**validated_data, hash=hash)
+        return Contract.objects.create(**validated_data)
 
     class Meta:
         model = Contract
