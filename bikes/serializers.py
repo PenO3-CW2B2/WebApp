@@ -34,7 +34,7 @@ class ContractSerializer(serializers.ModelSerializer):
         return hash
 
     def get_timeStamp(self, obj):
-        return obj.time_start.timestamp()
+        return int(obj.time_start.timestamp()*1000)
 
     class Meta:
         model = Contract
@@ -43,12 +43,16 @@ class ContractSerializer(serializers.ModelSerializer):
 class SecretContractSerializer(serializers.ModelSerializer):
 
     hash = serializers.SerializerMethodField()
+    timestamp = serializers.SerializerMethodField()
 
     def get_hash(self, obj):
         bike = Bike.objects.get(id=obj.bike_id)
         hash = str(sha256(str(bike.secret).encode() + str(obj.time_start.timestamp()).encode() + str(obj.user_id).encode()).hexdigest())
         return hash
 
+    def get_timeStamp(self, obj):
+        return int(obj.time_start.timestamp()*1000)
+
     class Meta:
         model = Contract
-        fields = ('hash', 'bike_id', 'time_start', 'user_id')
+        fields = ('timestamp', 'hash', 'bike_id', 'time_start', 'user_id')
