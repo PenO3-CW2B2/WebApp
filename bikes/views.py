@@ -55,14 +55,6 @@ class contractCreateView(generics.CreateAPIView):
         user = self.request.user.id
         contract = serializer.save(user_id=user, bike_id=bike)
 
-class userBike(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        bikes = request.user.bike_set().filter(contract__time_end__isnull=True)
-        serializer = serializers.BikeSerializer(bikes, many=True)
-        return Response(serializer.data)
-
 class userContracts(APIView):
     permission_classes = (IsAuthenticated,)
 
