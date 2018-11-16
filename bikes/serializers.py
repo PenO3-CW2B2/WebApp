@@ -50,7 +50,7 @@ class SecretContractSerializer(serializers.ModelSerializer):
         hash = str(sha256(str(bike.secret).encode() + str(obj.time_start.timestamp()).encode() + str(obj.user_id).encode()).hexdigest())
         return hash
 
-    def get_timeStamp(self, obj):
+    def get_timestamp(self, obj):
         return int(obj.time_start.timestamp()*1000)
 
     class Meta:
