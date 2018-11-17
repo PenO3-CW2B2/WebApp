@@ -36,6 +36,11 @@ DEFAULT_FROM_EMAIL = 'no-reply@localhost'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 EMAIL_SUBJECT_PREFIX = 'smartbikerental'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
 
 # Application definition
 
