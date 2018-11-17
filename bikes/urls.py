@@ -1,4 +1,4 @@
-from django.conf.urls import url, include
+from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from bikes import views
 

@@ -1,28 +1,27 @@
-from django.shortcuts import render, redirect
 from rest_framework import generics
 from rest_framework.views import APIView
 from django.core.exceptions import SuspiciousOperation
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from django.http import HttpResponse
 import requests
 from django.conf import settings
-from bikes import serializers, signals
+from bikes import serializers
 from bikes.models import Bike, Contract
-import datetime
 from django.db.models import Q
+
 
 class UserActivationView(APIView):
     """
     Used to verify an email address
     """
-    def get (self, request, uid, token):
+
+    def get(self, request, uid, token):
         protocol = 'https://' if request.is_secure() else 'http://'
         host = request.get_host()
         url = protocol + host + "/" + settings.HOST_PREFIX + "auth/users/activate/"
         post_data = {'uid': uid, 'token': token}
-        result = requests.post(url, data = post_data)
+        result = requests.post(url, data=post_data)
         if result.status_code == 204:
             return HttpResponse("Accout has been activated succesfully.")
         if result.status_code == 400:
@@ -30,16 +29,19 @@ class UserActivationView(APIView):
         if result.status_code == 403:
             return HttpResponse("This account has already been activated.")
 
+
 class bikeCreateView(generics.CreateAPIView):
     serializer_class = serializers.BikeSerializer
     permission_classes = (IsAdminUser,)
+
     def perform_create(self, serializer):
-        data = self.request.data
         serializer.save()
+
 
 class bikeDeleteView(generics.DestroyAPIView):
     serializer_class = serializers.BikeSerializer
     permission_classes = (IsAdminUser,)
+
 
 class contractCreateView(generics.CreateAPIView):
     serializer_class = serializers.ContractSerializer
@@ -53,7 +55,8 @@ class contractCreateView(generics.CreateAPIView):
         if Bike.objects.get(id=bike).contract_set.filter(time_end__isnull=True):
             raise SuspiciousOperation("Invalid request; this bike is already hirerd")
         user = self.request.user.id
-        contract = serializer.save(user_id=user, bike_id=bike)
+        serializer.save(user_id=user, bike_id=bike)
+
 
 class userContracts(APIView):
     permission_classes = (IsAuthenticated,)
@@ -62,7 +65,8 @@ class userContracts(APIView):
         user = request.user
         contracts = user.contract_set.filter(time_end__isnull=True)
         serializer = serializers.ContractSerializer(contracts, many=True)
-        return Repsone(serializer.data)
+        return Response(serializer.data)
+
 
 class userBikeHash(APIView):
     permission_classes = (IsAuthenticated,)
@@ -71,11 +75,10 @@ class userBikeHash(APIView):
         user = request.user
         contracts = user.contract_set.filter(time_end__isnull=True)
         contract = contracts[0]
-        bike = Bike.objects.get(id=contract.bike_id)
-        hash = calculateBikeHash(bike.secret, contract.time_start, user.id)
-        serializer = serializers.SecretContractSerializer(contract, context={'hash': hash})
+        serializer = serializers.SecretContractSerializer(contract)
         print(serializer.data)
         return Response(serializer.data)
+
 
 class bikeList(APIView):
     permission_classes = (IsAdminUser,)
@@ -85,11 +88,12 @@ class bikeList(APIView):
         serializer = serializers.BikeSerializer(bikes, many=True)
         return Response(serializer.data)
 
+
 class FreeBikeList(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        bikes = Bike.objects.filter(Q(contract__isnull = True) | Q(contract__time_end__isnull = False))
+        bikes = Bike.objects.filter(Q(contract__isnull=True) | Q(contract__time_end__isnull=False))
         serializer = serializers.PublicBikeSerializer(bikes, many=True)
         return Response(serializer.data)
 
@@ -102,6 +106,7 @@ class bikeDetails(APIView):
         serializer = serializers.BikeSerializer(bike)
         return Response(serializer.data)
 
+
 class contractList(APIView):
     permission_classes = (IsAdminUser,)
 
@@ -109,6 +114,7 @@ class contractList(APIView):
         contracts = Contract.objects.all()
         serializer = serializers.ContractSerializer(contracts, many=True)
         return Response(serializer.data)
+
 
 class contractDetails(APIView):
     permission_classes = (IsAdminUser,)

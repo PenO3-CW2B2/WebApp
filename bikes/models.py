@@ -1,8 +1,6 @@
 from django.db import models
 from django.conf import settings
-from datetime import datetime
 
-# Create your models here.
 
 class Bike(models.Model):
     secret = models.CharField(max_length=32)
@@ -10,6 +8,7 @@ class Bike(models.Model):
     battery = models.PositiveSmallIntegerField(default=32767)
     last_longitude = models.DecimalField(max_digits=9, decimal_places=6, default=0.0)
     last_laltitude = models.DecimalField(max_digits=9, decimal_places=6, default=0.0)
+
 
 class Contract(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

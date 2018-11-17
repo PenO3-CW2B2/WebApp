@@ -27,7 +27,7 @@ HOST_PREFIX = ''
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default':
+    'default': {}
 }
 
 # adress used for sening verification emails en the email for errors
@@ -166,18 +166,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # will be generated when the program is ran for the first time
 SECRET_KEY = 'NOT_SET'
 
-#generates a secret key when the program is ran for the first time
+# generates a secret key when the program is ran for the first time
 if SECRET_KEY == 'NOT_SET':
 
     from django.utils.crypto import get_random_string
 
     SECRET_KEY = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
     # Read in the file
-    with open(__file__, 'r') as file :
+    with open(__file__, 'r') as file:
         filedata = file.read()
 
     # Replace the target string
-    filedata = filedata.replace("\nSECRET_KEY = 'NOT_SET'","\nSECRET_KEY = '"+SECRET_KEY+"'")
+    filedata = filedata.replace("\nSECRET_KEY = 'NOT_SET'", "\nSECRET_KEY = '"+SECRET_KEY+"'")
 
     # Write the file out again
     with open(__file__, 'w') as file:
