@@ -110,7 +110,7 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': HOST_PREFIX + 'auth/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
-    'SERIALIZERS': {},
+    'SERIALIZERS': {'user_create': 'bikes.serializers.UserCreateSerializer'},
 }
 
 # Password validation

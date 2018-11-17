@@ -1,9 +1,12 @@
 from rest_framework import serializers
 from bikes.models import Bike, Contract
 from django.contrib.auth.models import User
+from djoser.serializers import UserCreateSerializer as DjoserUserCreateSerializer
 from hashlib import sha256
 
-
+class UserCreateSerializer(DjoserUserCreateSerializer):
+    class Meta(DjoserUserCreateSerializer.Meta):
+        fields = DjoserUserCreateSerializer.Meta.fields + ('first_name', 'last_name')
 
 class PublicBikeSerializer(serializers.ModelSerializer):
     class Meta:
