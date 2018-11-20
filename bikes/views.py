@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from django.core.exceptions import SuspiciousOperation
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseGone
 import requests
 from django.conf import settings
 from bikes import serializers
@@ -74,6 +74,8 @@ class userBikeHash(APIView):
     def get(self, request):
         user = request.user
         contracts = user.contract_set.filter(time_end__isnull=True)
+        if len(contracts) == 0:
+            return HttpResponseGone("No bike hirerd")
         contract = contracts[0]
         serializer = serializers.SecretContractSerializer(contract)
         print(serializer.data)
