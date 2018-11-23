@@ -35,6 +35,14 @@ class UserActivationView(APIView):
 
 
 class bikeCreateView(generics.CreateAPIView):
+    """
+    Used to create a new bike
+    expected post data:
+    - secret = string (requirerd)
+    - last_laltitude = float
+    - last_longitude = float
+    - battery = int
+    """
     serializer_class = serializers.BikeSerializer
     permission_classes = (IsAdminUser,)
 
@@ -43,11 +51,19 @@ class bikeCreateView(generics.CreateAPIView):
 
 
 class bikeDeleteView(generics.DestroyAPIView):
+    """
+    Used to delete a bike
+    """
     serializer_class = serializers.BikeSerializer
     permission_classes = (IsAdminUser,)
 
 
 class contractCreateView(generics.CreateAPIView):
+    """
+    Used to create a contract
+    expected post data:
+    - bike_id = int (requirerd)
+    """
     serializer_class = serializers.ContractSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -63,6 +79,9 @@ class contractCreateView(generics.CreateAPIView):
 
 
 class userContracts(APIView):
+    """
+    Used to get the contracts related to the user
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -73,6 +92,9 @@ class userContracts(APIView):
 
 
 class bikeOwnership(APIView):
+    """
+    Used to create a new ownership for a bike
+    """
     permission_classes = (IsAdminUser,)
 
     def post(self, request, userid, bikeid):
@@ -84,6 +106,9 @@ class bikeOwnership(APIView):
 
 
 class userBikeHash(APIView):
+    """
+    Used to get the hash of the current hirerd bike
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -98,6 +123,9 @@ class userBikeHash(APIView):
 
 
 class bikeList(APIView):
+    """
+    Used to return a list of all bikes
+    """
     permission_classes = (IsAdminUser,)
 
     def get(self, request):
@@ -107,6 +135,9 @@ class bikeList(APIView):
 
 
 class FreeBikeList(APIView):
+    """
+    Used to return a list of all unhirerd bikes
+    """
     permission_classes = (AllowAny,)
 
     def get(self, request):
@@ -116,6 +147,9 @@ class FreeBikeList(APIView):
 
 
 class bikeDetails(APIView):
+    """
+    Used to get or update information of a certain bike
+    """
     permission_classes = (OwnsBike,)
 
     def get(self, request, pk):
@@ -134,6 +168,9 @@ class bikeDetails(APIView):
 
 
 class contractList(APIView):
+    """
+    Used to get a list of all contracts
+    """
     permission_classes = (IsAdminUser,)
 
     def get(self, request):
@@ -143,6 +180,9 @@ class contractList(APIView):
 
 
 class contractDetails(APIView):
+    """
+    Used to get information of a specific contract
+    """
     permission_classes = (IsAdminUser,)
 
     def get(self, request, pk):
@@ -152,6 +192,11 @@ class contractDetails(APIView):
 
 
 class contractEnd(APIView):
+    """
+    Used to end a specific contract
+    Expected post data:
+    - end_time = int (requirerd)
+    """
     permission_classes = (OwnsBike,)
 
     def post(self, request, pk):
@@ -165,6 +210,15 @@ class contractEnd(APIView):
 
 
 class bikeMessage(APIView):
+    """
+    Used by the bike to send information to the server
+    Expected post data:
+    - end_time = int (requirerd)
+    - secret = string
+    - last_laltitude = float
+    - last_longitude = float
+    - battery = int
+    """
     permission_classes = (OwnsBike,)
 
     def post(self, request, pk):
