@@ -162,3 +162,23 @@ class contractEnd(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class bikeMessage(APIView):
+    permission_classes = (OwnsBike,)
+
+    def post(self, request, pk):
+        bike = Bike.objects.get(id=pk)
+        self.check_object_permissions(request, bike)
+        contracts = Bike.contract_set.filter(time_end__isnull=True)
+        if len(contracts) == 0:
+            return HttpResponseGone("No bike hirerd")
+        contract = contracts[0]
+        serializer = serializers.BikeSerializer(bike, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        end_time = datetime.datetime.fromtimestamp(int(request.data['end_time']), tz=pytz.utc)
+        serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
