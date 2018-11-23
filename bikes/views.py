@@ -8,7 +8,11 @@ import requests
 from django.conf import settings
 from bikes import serializers
 from bikes.models import Bike, Contract
+from bikes.permissions import OwnsBike
 from django.db.models import Q
+from django.contrib.auth.models import User
+import pytz
+import datetime
 
 
 class UserActivationView(APIView):
@@ -68,6 +72,17 @@ class userContracts(APIView):
         return Response(serializer.data)
 
 
+class bikeOwnership(APIView):
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request, userid, bikeid):
+        user = User.objects.get(id=userid)
+        bike = Bike.objects.get(id=bikeid)
+        bike.owners.add(user)
+        serializer = serializers.BikeSerializer(bike)
+        return Response(serializer.data)
+
+
 class userBikeHash(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -101,11 +116,20 @@ class FreeBikeList(APIView):
 
 
 class bikeDetails(APIView):
-    permission_classes = (IsAdminUser,)
+    permission_classes = (OwnsBike,)
 
     def get(self, request, pk):
         bike = Bike.objects.get(id=pk)
+        self.check_object_permissions(request, bike)
         serializer = serializers.BikeSerializer(bike)
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        bike = Bike.objects.get(id=pk)
+        self.check_object_permissions(request, bike)
+        serializer = serializers.BikeSerializer(bike, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
 
 
@@ -124,4 +148,17 @@ class contractDetails(APIView):
     def get(self, request, pk):
         contract = Contract.objects.get(id=pk)
         serializer = serializers.ContractSerializer(contract)
+        return Response(serializer.data)
+
+
+class contractEnd(APIView):
+    permission_classes = (OwnsBike,)
+
+    def post(self, request, pk):
+        contract = Contract.objects.get(id=pk)
+        self.check_object_permissions(request, contract.bike)
+        end_time = datetime.datetime.fromtimestamp(int(request.data['end_time']), tz=pytz.utc)
+        serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
