@@ -6,7 +6,7 @@ class OwnsBike(permissions.BasePermission):
     def has_object_permission(self, request, view, bike):
         user = request.user
         try:
-            if user.is_staff or user in bike.owners_set.all():
+            if user.is_staff or user in bike.owners.all():
                 return True
             else:
                 return False
