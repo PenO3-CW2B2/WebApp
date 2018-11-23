@@ -10,5 +10,5 @@ class OwnsBike(permissions.BasePermission):
                 return True
             else:
                 return False
-        except():
+        except(AttributeError):
             return False
