@@ -10,6 +10,7 @@ the project has the following dependencies:
 - [django-rest-framework](https://www.django-rest-framework.org/)
 - [django-rest-framework-jwt](https://pypi.org/project/djangorestframework-jwt/)
 - [djoser](https://github.com/sunscrapers/djoser)
+- [pynmea2](https://github.com/sunscrapers/pynmea2)
 
 clone this repository
 

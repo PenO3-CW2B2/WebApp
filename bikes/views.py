@@ -11,8 +11,8 @@ from bikes.models import Bike, Contract
 from bikes.permissions import OwnsBike
 from django.db.models import Q
 from django.contrib.auth.models import User
-import pytz
 import datetime
+import pynmea2
 
 
 class UserActivationView(APIView):
@@ -194,15 +194,13 @@ class contractDetails(APIView):
 class contractEnd(APIView):
     """
     Used to end a specific contract
-    Expected post data:
-    - end_time = int (requirerd)
     """
     permission_classes = (OwnsBike,)
 
     def post(self, request, pk):
         contract = Contract.objects.get(id=pk)
         self.check_object_permissions(request, contract.bike)
-        end_time = datetime.datetime.fromtimestamp(int(request.data['end_time']), tz=pytz.utc)
+        end_time = datetime.datetime.now()
         serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -211,12 +209,10 @@ class contractEnd(APIView):
 
 class bikeMessage(APIView):
     """
-    Used by the bike to send information to the server
+    Used by the bike to send information to the server. Will end any ongoing contracts.
     Expected post data:
-    - end_time = int (requirerd)
     - secret = string
-    - last_laltitude = float
-    - last_longitude = float
+    - gpgga = string (requirerd)
     - battery = int
     """
     permission_classes = (OwnsBike,)
@@ -224,15 +220,19 @@ class bikeMessage(APIView):
     def post(self, request, pk):
         bike = Bike.objects.get(id=pk)
         self.check_object_permissions(request, bike)
-        contracts = Bike.contract_set.filter(time_end__isnull=True)
-        if len(contracts) == 0:
-            return HttpResponseGone("No bike hirerd")
-        contract = contracts[0]
-        serializer = serializers.BikeSerializer(bike, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        end_time = datetime.datetime.fromtimestamp(int(request.data['end_time']), tz=pytz.utc)
-        serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
+        contracts = bike.contract_set.filter(time_end__isnull=True)
+        if len(contracts) != 0:
+            contract = contracts[0]
+            end_time = datetime.datetime.now()
+            serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        gpgga = request.data['gpgga']
+        msg = pynmea2.parse(gpgga)
+        data = request.data.copy()
+        data.update({'last_longitude': round(msg.longitude, 6), 'last_laltitude': round(msg.latitude, 6)})
+        print(data)
+        serializer = serializers.BikeSerializer(bike, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
