@@ -53,7 +53,7 @@ class ContractSerializer(serializers.ModelSerializer):
         return instance
 
     def get_hash(self, obj):
-        calculateContractHash(obj)
+        return calculateContractHash(obj)
 
     def get_timestamp(self, obj):
         return int(obj.time_start.timestamp())
@@ -69,7 +69,7 @@ class SecretContractSerializer(serializers.ModelSerializer):
     timestamp = serializers.SerializerMethodField()
 
     def get_hash(self, obj):
-        calculateContractHash(obj)
+        return calculateContractHash(obj)
 
     def get_timestamp(self, obj):
         return int(obj.time_start.timestamp())
