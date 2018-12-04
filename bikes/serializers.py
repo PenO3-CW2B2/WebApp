@@ -4,6 +4,12 @@ from djoser.serializers import UserCreateSerializer as DjoserUserCreateSerialize
 from hashlib import sha256
 
 
+def calculateContractHash(contract):
+    bike = Bike.objects.get(id=contract.bike_id)
+    hash = str(sha256((str(bike.secret) + str(int(contract.time_start.timestamp())) + str(contract.user.username)).encode()).hexdigest())
+    return hash
+
+
 class UserCreateSerializer(DjoserUserCreateSerializer):
     class Meta(DjoserUserCreateSerializer.Meta):
         fields = DjoserUserCreateSerializer.Meta.fields + ('first_name', 'last_name')
@@ -47,12 +53,10 @@ class ContractSerializer(serializers.ModelSerializer):
         return instance
 
     def get_hash(self, obj):
-        bike = Bike.objects.get(id=obj.bike_id)
-        hash = str(sha256(str(bike.secret).encode() + str(int(obj.time_start.timestamp()*1000)).encode() + str(obj.user_id).encode()).hexdigest())
-        return hash
+        calculateContractHash(obj)
 
     def get_timestamp(self, obj):
-        return int(obj.time_start.timestamp()*1000)
+        return int(obj.time_start.timestamp())
 
     class Meta:
         model = Contract
@@ -65,12 +69,10 @@ class SecretContractSerializer(serializers.ModelSerializer):
     timestamp = serializers.SerializerMethodField()
 
     def get_hash(self, obj):
-        bike = Bike.objects.get(id=obj.bike_id)
-        hash = str(sha256(str(bike.secret).encode() + str(int(obj.time_start.timestamp()*1000)).encode() + str(obj.user_id).encode()).hexdigest())
-        return hash
+        calculateContractHash(obj)
 
     def get_timestamp(self, obj):
-        return int(obj.time_start.timestamp()*1000)
+        return int(obj.time_start.timestamp())
 
     class Meta:
         model = Contract
