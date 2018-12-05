@@ -200,7 +200,10 @@ class contractEnd(APIView):
     def post(self, request, pk):
         contract = Contract.objects.get(id=pk)
         self.check_object_permissions(request, contract.bike)
-        end_time = datetime.datetime.now()
+        if 'timestamp' in request.data:
+            end_time = request.data['timestamp']
+        else:
+            end_time = datetime.datetime.now()
         serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -212,8 +215,9 @@ class bikeMessage(APIView):
     Used by the bike to send information to the server. Will end any ongoing contracts.
     Expected post data:
     - secret = string
-    - gpgga = string (requirerd)
+    - gpgga = string
     - battery = int
+    - timestamp = int
     """
     permission_classes = (OwnsBike,)
 
@@ -223,15 +227,19 @@ class bikeMessage(APIView):
         contracts = bike.contract_set.filter(time_end__isnull=True)
         if len(contracts) != 0:
             contract = contracts[0]
-            end_time = datetime.datetime.now()
+            if 'timestamp' in request.data:
+                end_time = request.data['timestamp']
+            else:
+                end_time = datetime.datetime.now()
             serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        gpgga = request.data['gpgga']
-        msg = pynmea2.parse(gpgga)
-        data = request.data.copy()
-        if gpgga.gps_qual == 1:
-            data.update({'last_longitude': round(msg.longitude, 6), 'last_laltitude': round(msg.latitude, 6)})
+        if 'gpgga' in request.data:
+            gpgga = request.data['gpgga']
+            msg = pynmea2.parse(gpgga)
+            data = request.data.copy()
+            if gpgga.gps_qual == 1:
+                data.update({'last_longitude': round(msg.longitude, 6), 'last_laltitude': round(msg.latitude, 6)})
         serializer = serializers.BikeSerializer(bike, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
