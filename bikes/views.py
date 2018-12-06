@@ -234,10 +234,10 @@ class bikeMessage(APIView):
             serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+        data = request.data.copy()
         if 'gpgga' in request.data:
             gpgga = request.data['gpgga']
             msg = pynmea2.parse(gpgga)
-            data = request.data.copy()
             if gpgga.gps_qual == 1:
                 data.update({'last_longitude': round(msg.longitude, 6), 'last_laltitude': round(msg.latitude, 6)})
         serializer = serializers.BikeSerializer(bike, data=data, partial=True)
