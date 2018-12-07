@@ -247,6 +247,9 @@ class bikeMessage(APIView):
                 print('test')
                 del data['last_laltitude']
                 del data['last_longitude']
+        if 'secret' in data:
+            if data['secret'] == '1':
+                del data['secret']
         serializer = serializers.BikeSerializer(bike, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
