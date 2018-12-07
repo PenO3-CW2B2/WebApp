@@ -240,6 +240,13 @@ class bikeMessage(APIView):
             msg = pynmea2.parse(gpgga)
             if gpgga.gps_qual == 1:
                 data.update({'last_longitude': round(msg.longitude, 6), 'last_laltitude': round(msg.latitude, 6)})
+        print('test')
+        if 'last_laltitude' in data and 'last_longitude' in data:
+            print('test')
+            if float(data['last_longitude']) == 0.0 and float(data['last_laltitude']) == 0.0:
+                print('test')
+                del data['last_laltitude']
+                del data['last_longitude']
         serializer = serializers.BikeSerializer(bike, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
