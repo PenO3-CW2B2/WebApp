@@ -67,6 +67,8 @@ class SecretContractSerializer(serializers.ModelSerializer):
 
     hash = serializers.SerializerMethodField()
     timestamp = serializers.SerializerMethodField()
+    last_longitude = serializers.SerializerMethodField()
+    last_laltitude = serializers.SerializerMethodField()
 
     def get_hash(self, obj):
         return calculateContractHash(obj)
@@ -74,6 +76,12 @@ class SecretContractSerializer(serializers.ModelSerializer):
     def get_timestamp(self, obj):
         return int(obj.time_start.timestamp())
 
+    def get_last_longitude(self, obj):
+        return obj.bike.last_longitude
+
+    def get_last_laltitude(self, obj):
+        return obj.bike.last_laltitude
+
     class Meta:
         model = Contract
-        fields = ('timestamp', 'hash', 'bike_id', 'time_start', 'user_id')
+        fields = ('timestamp', 'hash', 'bike_id', 'time_start', 'user_id', 'last_longitude', 'last_laltitude')
