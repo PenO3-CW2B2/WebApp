@@ -230,7 +230,7 @@ class bikeMessage(APIView):
             contract = contracts[0]
             if 'timestamp' in request.data:
                 timestamp = request.data['timestamp']
-                end_time = datetime.datetime.fromtimestamp(int(request.data['end_time']), tz=pytz.utc)
+                end_time = datetime.datetime.fromtimestamp(int(timestamp), tz=pytz.utc)
             else:
                 end_time = datetime.datetime.now()
             serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
