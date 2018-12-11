@@ -226,7 +226,10 @@ class bikeMessage(APIView):
         bike = Bike.objects.get(id=pk)
         self.check_object_permissions(request, bike)
         contracts = bike.contract_set.filter(time_end__isnull=True)
-        if len(contracts) != 0:
+        if 'secret' in data:
+            if data['secret'] == '1':
+                del data['secret']
+        if len(contracts) != 0 and 'secret' in data:
             contract = contracts[0]
             if 'timestamp' in request.data:
                 timestamp = request.data['timestamp']
@@ -246,9 +249,6 @@ class bikeMessage(APIView):
             if float(data['last_longitude']) == 0.0 and float(data['last_laltitude']) == 0.0:
                 del data['last_laltitude']
                 del data['last_longitude']
-        if 'secret' in data:
-            if data['secret'] == '1':
-                del data['secret']
         serializer = serializers.BikeSerializer(bike, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
