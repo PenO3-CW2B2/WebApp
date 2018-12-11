@@ -13,6 +13,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 import datetime
 import pynmea2
+import pytz
 
 
 class UserActivationView(APIView):
@@ -228,7 +229,8 @@ class bikeMessage(APIView):
         if len(contracts) != 0:
             contract = contracts[0]
             if 'timestamp' in request.data:
-                end_time = request.data['timestamp']
+                timestamp = request.data['timestamp']
+                end_time = datetime.datetime.fromtimestamp(int(request.data['end_time']), tz=pytz.utc)
             else:
                 end_time = datetime.datetime.now()
             serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
