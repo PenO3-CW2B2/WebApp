@@ -226,6 +226,7 @@ class bikeMessage(APIView):
         bike = Bike.objects.get(id=pk)
         self.check_object_permissions(request, bike)
         contracts = bike.contract_set.filter(time_end__isnull=True)
+        data = request.data.copy()
         if 'secret' in data:
             if data['secret'] == '1':
                 del data['secret']
@@ -239,7 +240,6 @@ class bikeMessage(APIView):
             serializer = serializers.ContractSerializer(contract, data={'time_end': end_time}, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        data = request.data.copy()
         if 'gpgga' in request.data:
             gpgga = request.data['gpgga']
             msg = pynmea2.parse(gpgga)
