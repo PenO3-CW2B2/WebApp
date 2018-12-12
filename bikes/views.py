@@ -28,7 +28,7 @@ class UserActivationView(APIView):
         post_data = {'uid': uid, 'token': token}
         result = requests.post(url, data=post_data)
         if result.status_code == 204:
-            return HttpResponse("Accout has been activated succesfully.")
+            return HttpResponse("Account has been activated succesfully.")
         if result.status_code == 400:
             return HttpResponse("Bad request. Make sure you have copied/enetered the whole URL.")
         if result.status_code == 403:
