@@ -37,7 +37,7 @@ You can test the server by running it locally
 
 and you should be able to access it on http://127.0.0.1:8000
 
-for installation on [an ulyssis server](https://ulyssis.org/hosting/) with (Fast)CGI see [this](https://docs.ulyssis.org/Using_(Fast)CGI_for_non-PHP_websites#Example:_Django).
+for installation on [an ulyssis server](https://ulyssis.org/hosting/) with (Fast)CGI see [this](https://docs.ulyssis.org/Using_%28Fast%29CGI_for_non-PHP_websites#Example:_Django).
 
 Note: When using an appache server you should add `CGIPassAuth On` to the htaccess file.
 Otherwise the custom header `Authorization` will not be passed to django.
